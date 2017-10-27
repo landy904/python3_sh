@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('site manage') }}{% endblock %}
+
+{% block branding %}
+{#<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>#}
+{#  <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('后台') }}</a></h1>#}
+    <h1>欢迎来到上海传智django后台管理中心</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

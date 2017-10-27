@@ -1,0 +1,14 @@
+<html>
+<head>
+    <title>首页</title>
+</head>
+<body>
+<a href="/create/">创建</a>
+<h4>图书列表</h4>
+<ul>
+    {%for book in booklist%}
+    <li>{{book.btitle}} &nbsp;&nbsp;&nbsp;&nbsp;<a href="/delete{{book.id}}/">删除</a></li>
+    {%endfor%}
+</ul>
+</body>
+</html>

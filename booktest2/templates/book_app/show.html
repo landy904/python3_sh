@@ -1,0 +1,16 @@
+<html>
+<head>
+    <title>展示富文本编辑器内容</title>
+</head>
+<body>
+{% for g in goods %}
+id:{{g.id}}
+<hr>
+{%autoescape off%}
+{{g.gcontent}}
+{%endautoescape%}
+<hr>
+{{g.gcontent|safe}}
+{% endfor %}
+</body>
+</html>

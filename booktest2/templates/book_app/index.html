@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{%  block title %}
+
+    {{ Tem_title }}
+
+{%  endblock title %}
+
+{% block body %}
+    <a href="/book"> 图书信息</a>
+    <ul>
+        {%  for book in Tem_booklist  %}
+        <li> <a href="/renwu{{ book.id }}"></a> {{ book.btitle }}</li>
+        {%  endfor %}
+	
+    </ul>
+
+{% endblock body %}

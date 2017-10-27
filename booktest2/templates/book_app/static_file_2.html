@@ -1,0 +1,12 @@
+{% extends "base.html"%}
+
+{%block title%}静态图片{%endblock title%}
+
+{%block body%}
+修改前：<img src="/static/img/1.jpg"/>
+<hr>
+动态配置：{%load static from staticfiles%}
+
+<img src="{%static 'img/1.jpg' %}"/>
+
+{%endblock body%}

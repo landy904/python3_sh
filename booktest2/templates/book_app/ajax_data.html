@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ajax功能展示</title>
+    <!-- 需要在头部导入jquery文件-->
+    <script src="/static/js/jquery.js"></script>
+    <!-- ajax 功能测试-->
+	<script>
+	// 页面加载完再操作
+	$(function () {
+	    // 绑定ajaxB按钮点击事件
+		$('#ajaxB').click(function () {
+		    // 按钮出发的事件就是，发起一个ajax请求，
+		    // 获取json_data函数返回的数据，jsondict表示请求回来的字典
+			$.get('/json_data/', function (jsondict) {
+			    // 定义一个变量名，他绑定后面的id为blist的ul标签
+                $('#blist li').remove()
+                booklist=$('#blist');
+                // 遍历所有的jsondict.booklist的元素
+                $.each(jsondict.booklist,function (i,book) {
+                    // 获取每一个元素的name属性值(图书名称)，然后以列表的方式拼接
+                    booklist.append('<li>'+book.name+'</li>');
+                });
+			});
+		});
+	});
+	</script>
+</head>
+<body>
+    <input id="ajaxB" type="button" value="网页微整形专家">
+    <hr>
+    <b>图书内容：</b>
+    <ul id="blist"></ul>
+</body>
+</html>

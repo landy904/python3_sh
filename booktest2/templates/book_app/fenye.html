@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}
+    <title>{{ Tem_title}} }}</title>
+{%  endblock title %}
+{%  block body  %}
+
+    {%  for renwu in Tem_renwu %}
+        <li>{{renwu.hname}}</li>
+    {%  endfor %}
+
+    <hr>
+    页码:&nbsp;&nbsp;
+    {%  if Tem_renwu.has_previous %}
+        <a href="/page{{Tem_renwu.number|add:-1}}/">上一页</a>&nbsp;&nbsp;
+    {%  endif %}
+    {%  for pindex in Tem_pnum %}
+        {%  if pindex == Tem_renwu.number %}
+            {{ pindex }} &nbsp;&nbsp;
+        {%  else %}
+            <a href="/page{{ pindex }}/">{{ pindex }}</a> &nbsp;&nbsp;
+        {%  endif %}
+    {% endfor %}
+    {%  if Tem_renwu.has_next %}
+        <a href="/page{{Tem_renwu.number|add:1}}/">下一页</a>&nbsp;&nbsp;
+    {%  endif %}
+{%  endblock body  %}

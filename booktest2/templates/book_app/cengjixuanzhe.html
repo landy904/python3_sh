@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tushu and renwu</title>
+    <script src="/static/js/jquery.js"></script>
+    <script>
+        $(function () {
+            $.get('/TuShu/', function (data) {
+                tushu = $('#tushu')
+                $.each(data.Tudic, function (i, t) {
+                    tushu.append('<option value="' + t[0] + '">' + t[1] + '</option>');
+                });
+
+            });
+
+
+            $('#tushu').change(function (){
+                $.get('/RenWu' + $(this).val() + '/', function (dic) {
+
+                    renwu = $('#renwu').empty();
+                    $.each(dic.RenWuDic, function(index, item){
+                        renwu.append('<option>' + item.heroname + '</option>');
+
+                    });
+
+                });
+
+            });
+
+        });
+
+    </script>
+
+</head>
+<body>
+    <select id ="tushu">
+        <option value="0">请选择图书</option>
+    </select>
+    <select id="renwu">
+        <option value="0">请选择人物</option>
+    </select>
+</body>
+</html>

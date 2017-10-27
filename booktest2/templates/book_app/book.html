@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- 定义一个title的 变量名标签 Tem_title -->
+    <title>{{Tem_title}}</title>
+</head>
+<body>
+{%for book in Tem_booklist%}
+{#    {% if book.id=2 %} #}
+    {% if book.btitle|length > 4 %}
+        <li> <a href="/renwu{{ book.id}}/" style="background-color: red"> {{ forloop.counter }}:
+            {{ book.btitle }} </a>   ---默认时间格式为： {{book.bpub_date}} </li>
+
+    {%  else %}
+        <li> <a href="/renwu{{ book.id}}/" style="background-color: green"> {{ forloop.counter }}:
+            {{ book.btitle }} </a>  ---默认时间格式为： {{book.bpub_date|date:"Y-m-j"}}  </li>
+    {%  endif %}
+{#    {% empty %}#}
+{#    <p>施工重地,闲人免进</p>#}
+{%  endfor %}
+</body>
+</html>

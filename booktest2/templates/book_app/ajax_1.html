@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        window.onload = function(){
+            var oBtn = document.getElementById("btn")
+            oBtn.onclick = function (){
+                var chr = null;
+                if (window.XMLHttpRequest){
+                    chr = new XMLHttpRequest();
+
+                }else {
+                    chr = new ActiveXObject("Microsoft.XMLHttp");
+                }
+{#                alert( chr);#}
+                var url="json1.data";
+
+                chr.open("GET",url,true);
+                chr.send(null);
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <input type="button" id="btn" value="ajax测试">
+</body>
+</html>

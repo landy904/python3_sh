@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>显示上传的图片</title>
+</head>
+<body>
+<p style="background-color: green ;font-size:20px;"> 图书展示</p>
+{%  for pic in Tem_pic %}
+
+<li style="background-color: aqua">
+    <img src="/static/media/{{pic}}"/>
+</li>
+{%  endfor %}
+
+</body>
+</html>
