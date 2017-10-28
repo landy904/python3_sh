@@ -1,0 +1,580 @@
+事务的基本要素：
+	ACID，指数据库事务正确执行的四个基本要素的缩写。包含:原子性(Atomicity)、一致性(Consistency)、隔离性(Isolation)、持久性(Durability)。
+	
+第一部分命令总结：
+	redis的部署：
+		前提：环境准备(如果要编译安装redis)
+			sudo apt-get update
+			sudo apt-get install build-essential tcl
+			sudo apt-get install redis-server
+			
+	快速方式：
+			安装：sudo apt-get install redis-server -y
+			开启：/etc/init.d/redis-server start
+			关闭：/etc/init.d/redis-server stop
+			检查：/etc/init.d/redis-server status
+			重启：/etc/init.d/redis-server restart
+			强制重载：/etc/init.d/redis-server force-reload
+			
+		常见redis文件详解
+			查找方式：
+			sudo find / -name "*redis*"
+				find 查找路径	-name	文件名(可以使用正则)
+				
+				
+			/etc/redis						redis默认安装路径
+			/etc/redis/redis.conf			redis的配置文件
+			/var/log/redis					redis日志路径
+			/usr/bin/redis-cli				redis客户端命令
+			/usr/bin/redis-server			redis服务端命令
+			/usr/bin/redis-check-aof		redis数据存储(AOF文件)监测工具
+			/usr/bin/redis-benchmark		redis性能压测工具
+			/usr/bin/redis-check-dump		redis数据监测工具
+			/etc/init.d/redis-server		redis启动文件配置
+			
+			默认端口：
+				6379
+				
+		客户端连接方式：
+			redis-cli
+				注意：默认连接本地的6379端口的0号数据库
+			redis-cli -h IP -p PORT
+				连接指定ip的指定port的redis数据库
+				
+		测试redis连接效果：
+			在输入框内，输入ping，返回结果为PONG，即可表明连接成功
+			admin-a@admina-virtual-machine:~$ redis-cli
+			127.0.0.1:6379> ping
+			PONG
+			
+		
+
+
+	自定义配置redis
+		创建目录和拷贝文件
+			sudo mkdir redis6080
+			sudo cp /etc/redis/redis.conf redis6080/
+		赋权
+			sudo chown admin-a.admin-a -R redis/*
+		修改配置文件：
+			46:pidfile redis-server.pid
+			50:port 6380
+			69:bind 127.0.0.1
+			108:logfile redis-server.log
+			注意：
+				最少要修改 pidfile、logfile
+				不然的话，运行过程中会报权限问题
+
+		启动方式：
+			cd redis
+			./redis-server redis.conf
+			ps aux | grep 6080
+			kill pid_num
+		
+		
+	配置文件详解：
+		默认的配置段
+		$ sudo grep  "###" /etc/redis/redis.conf  | wc -l
+		13
+		
+		默认的配置数量
+		$ sudo grep -vEn "#|^$" /etc/redis/redis.conf  | wc -l
+		50
+		
+	redis常见的redis命令
+		redis存在以下 14 个命令组，分别是：
+
+		命令          		注释              	子命令个数
+		generic         	通用命令组             	31
+		string          	字符串命令组          	24
+		list            	列表命令组            	17
+		set             	集合命令组              15
+		sorted_set      	有序集合命令组         	21
+		hash            	哈希命令组              15
+		pubsub          	订阅发布命令组         	6
+		transactions    	事务命令组            	5
+		connection      	连接命令组            	5
+		server          	服务命令组            	31
+		scripting       	脚本命令组        		7
+		hyperloglog                            		3
+		cluster         	集群命令组             	20
+		geo             	地理位置命令组         	6
+		
+	如何查看命令帮助：
+		help @命令组
+	
+	查看redis命令帮助
+		redis-server --help
+	
+第二部分数据类型总结：
+	支持七种数据类型：
+		string      ：   二进制式字符串
+		lists       ：   顺序字符串集合
+		Sets        ：   无顺序字符串集合
+		Sorted Sets ：   有序集合
+		hashes      ：   哈希映射
+		bit arrays  ：   简单的位映射
+		hyperloglogs：   概率数据结构
+		
+	常用五种数据类型：
+		字符串string
+			简单的k/v类型，value可以是String和数字
+			常用命令:  set,get,mset,mget,setex
+		哈希hash
+			Redis的Hash本质上还是一个嵌套的K/V结构的数据类似于在学习Django的JsonHTTPResponse对象，
+			最类似的就是我们在Django中返回的Json对象
+				{Hash-Key:{"字段1":属性1,"字段2":属性2,...,"字段n":属性n}}
+			常用命令：hget,hset
+		列表list
+			就是一个列表，你懂得
+			常用命令：lpush,rpush,lpop,rpop,lrange
+		集合set
+			存储无序字符串的列表，
+			和列表区别：
+				当你需要以列表形式存储key的数据，又不希望出现重复数据时
+			常用命令：sadd,spop,smembers
+			{key_name：ziduan1，ziduan2，...}
+		有序集合zset
+			基于set，使用分数对每个key进行大小排序，形成一个有序key集合
+			常见命令：zadd,zrange,zrem
+			{key_name：score1 ziduan1，score2 ziduan2，...}
+
+	
+	字符串常见操作：
+		注意：
+			key_name一旦没有了内容，那么这个key_name就自动消失了
+			
+		设置key：
+			set key_name value
+		设置key(携带过期时间)：
+			setex key_name seconds value
+		同时设置多个key：
+			mset key1 value1 key2 value2 ...
+		给key追加数据
+			append key_name value
+		查看key的值：
+			get key_name
+		获取多个key的值：
+			mget key1 key2 ...
+			
+	常见key操作：
+		查看所有key
+			keys *
+		判断key是否存在
+			exists key_name
+		查看key类型
+			type key_name
+		删除key
+			del key_name
+			注意：key_name可以是一个或多个
+		设置key过期时间
+			expire key_name seconds
+		
+	hash常见操作
+		给key的某个属性设置值
+			hset key_name field value
+		给key的多个属性设置值
+			hmset key_name field1 value1 field2 value2 ...
+			
+		获取key的所有属性
+			hkeys key_name
+			
+		获取key的单个属性的值
+			hget key_name field
+		获取key的多个属性的值
+			hmget key_name field1 field2 ...
+		获取key的所有属性的值
+			hvals key_name
+			
+		删除key的属性
+			hdel key_name value
+			注意：
+				value可以是1个或多个
+	
+	
+	list数据常见操作
+		在key的左侧依次插入数据
+			lpush key_name value1 value2 ...
+		在key的右侧依次插入数据
+			rpush key_name value1 value2 ...
+		在key的指定位置前后插入数据
+			linsert key_name before value(已存在) value(将要插入的新值)
+			linsert key_name after value(已存在) value(将要插入的新值)
+			注意：
+				value如果存在多个的话，默认是从左侧数第一个value
+	
+		获取数据格式
+			lrange key_name start_pos stop_pos
+			注意：
+				位置索引，左侧的第一个默认是0
+		获取所有数据
+			lrange key_name 0 -1
+			
+		给指定位置的值设定新值
+			lset key index value
+			注意：
+				默认index从左侧开始，第1个是0
+				index可以是负数，表示尾部开始计数，
+					如-1表示最后1个元素
+					
+		删除指定的数据
+			lrem key count value
+			注意：
+				count > 0: 从左开始移除指定value的个数
+				count < 0: 从右开始移除指定value的个数
+				count = 0: 移除所有指定的value
+			
+	set常见操作
+		给key添加无序内容
+			sadd key_name member
+			注意：	
+				member可以是1个也可以是多个
+		获取key的所有数据
+			smembers key_name
+		删除key的指定数据
+			srem key_name member 
+			注意：	
+				member可以是1个也可以是多个
+		删除key的一个随机数据
+			spop key_name
+		
+
+	
+	sorted set常见操作
+		注意：
+			也就是说，他们是根据你给定的score的值的大小，从小到大进行排序
+		给key添加有序的内容
+			ZADD key_name score member
+			注意：
+				score member 是一个整体
+				这个整体可以是一个，也可以是多个
+		获取key的数据
+			zrange key_name start stop
+		获取key的所有数据
+			zrange key_name 0 -1
+		获取key指定权重大小范围内的数据
+			zrangebyscore key_name min max
+		获取key指定数据的权重
+			zscore key_name member
+			
+		删除key指定的数据
+			zrem key_name member
+			注意：
+				member可以是1个也可以是多个
+		删除key权重在指定范围的数据
+			zremrangebyscore key_name min max
+			
+第三部分python中的redis操作
+	安装模块
+		pip install redis
+		注意：
+			要进入虚拟环境
+	python如何使用redis
+		进入python解释器
+			python
+		导入模块
+			from redis import *
+		定义对象
+			sr = StrictRedis(host='localhost', port=6379, db=0)
+			简写：sr=StrictRedis()
+			
+	python简单redis实践
+		定义一个字符串对象
+			result = sr.set('name','itheima')
+			print(result)
+		获取指定key的值
+			result = sr.get('name')
+			print(result)
+		获取所有的key
+			result=sr.keys()
+			print(result)
+		修改指定key的值
+			result = sr.set('name','itcast')
+			print(result)
+		
+		删除key
+			result = sr.delete('name')
+			print(result)
+			
+			
+		常见的使用方法：
+			字符串常见方法：
+				设置一个值：
+					sr.set('hello', 'world')
+				获取一个值：
+					sr.get('hello')
+				给key追加内容：
+					sr.append('hello','/')
+					
+				设置过期时间：sr.setex('k','v',10)
+				查看剩余时间：sr.ttl('key')
+				设置多个值：
+					sr.mset(k1='v1', k2='v2')
+					sr.mset({'k1':'v1', 'k1':'v1'})
+				获取多个值：
+					sr.mget('k1','k2')
+					sr.mget(['k1','k2'])
+			hash常见方法：
+				设置key的单个键值对
+					sr.hset('key_name', 'key', 'value')
+				设置key的多个键值对
+					sr.hmset('key_name', {'k1': 'v1', 'k2': 'v2'})
+				获取key的某个键的值
+					sr.hget('key_name','k2')
+				获取key的多个键的值
+					sr.hmget('key_name',['k1', 'k2'])
+					sr.hmget('key_name','k1', 'k2')
+				获取key的所有键的值
+					sr.hgetall('key_name')
+				获取key的所有键
+					sr.hkeys('key_name')
+				获取key的所有值
+					sr.hvals('key_name')
+			
+			列表常用方法：
+				列表左侧添加列表
+					sr.lpush('liebiao', 'v1','v2','v3')
+				列表右侧添加列表
+					sr.rpush('liebiao', 'v4','v5','v6')
+				列表v4前面添加一个值
+					sr.linsert('liebiao','BEFORE','v4','cc')
+				列表v5后面添加一个值
+					sr.linsert('liebiao','after','v5','dd')
+					注意：
+						after和before 大小写无所谓
+				列表查看数据
+					sr.lrange('liebiao','0','-1')
+					
+			set常见操作
+				设置一个key
+					sr.sadd('set_name', 'ziduan')
+				获取key的属性
+					sr.smembers('set_name')
+				
+			sorted set常见操作：
+				设置一个key
+					sr.zadd('sorted_name','n1',11,'n2',22)
+				获取key所有的数据
+					sr.zrange('sorted_name', 0, -1)
+			
+	django项目使用redis
+		安装模块
+			pip install django-redis-sessions==0.5.6
+		配置django的redis内容
+			SESSION_ENGINE = 'redis_sessions.session'
+			SESSION_REDIS_HOST = 'localhost'
+			SESSION_REDIS_PORT = 6379
+			SESSION_REDIS_DB = 2
+			SESSION_REDIS_PASSWORD = ''
+			SESSION_REDIS_PREFIX = 'session'
+			
+		定义view函数：
+			def session_set(request):
+				request.session['name']='itheima'
+				return HttpResponse('ok')
+			def session_get(request):
+				name=request.session['name']
+				return HttpResponse(name)
+
+		定义路由配置规则		
+			url(r'^session_set/$',views.session_set),
+			url(r'^session_get/$', views.session_get),
+			
+		检查效果：
+			redis-cli
+			select 2
+			keys *
+			get key_name
+			echo "value" | base64 -d
+			
+第四部分：redis主从
+	准备工作：
+		按照自定义部署redis的方式，创建两个redis
+		主redis：
+			sudo mkdir redis6080
+			sudo cp cp /usr/bin/redis-server redis6080/
+			sudo cp /etc/redis/redis.conf redis6080/
+			sudo chown admin-a.admin-a -R redis6080/*
+			vim redis6080/redis.conf
+				 42: daemonize yes
+				 46: pidfile  redis-6080.pid
+				 50: port 6380
+				 69: bind 192.168.8.14
+				108: logfile  redis-6080.log
+
+			
+		从redis：
+			sudo mkdir redis6081
+			sudo cp cp /usr/bin/redis-server redis6081/
+			sudo cp /etc/redis/redis.conf redis6081/
+			sudo chown admin-a.admin-a -R redis6081/*
+			vim redis6081/redis.conf
+
+				 42: daemonize yes
+				 46: pidfile  redis-6081.pid
+				 50: port 6381
+				 69: bind 192.168.8.14
+				108: logfile  redis-6081.log
+				210: slaveof 192.168.8.14 6380		******
+				
+		启动redis
+			./redis6080/redis-server redis6080/redis.conf
+			./redis6081/redis-server redis6081/redis.conf
+		检查效果：
+			进入6380redis
+				redis-cli -h 192.168.8.14 -p 6380
+			检查效果
+				info Replication
+			添加数据
+				set data_key 6380-6381
+				
+			进入6381redis
+				redis-cli -h 192.168.8.14 -p 6381
+			检查效果
+				info Replication
+			查看数据
+				get data_key
+		注意：
+			默认redis的主从是读写分离的，即只有主才可以进行写操作
+			
+			
+第五部分：redis集群
+	Redis 集群由多个运行在集群模式(cluster mode)下的 Redis 实例组成,实例的集群模式需要通过配置来开启, 开启集群模式的实例将可以使用集群特有的功能和命令。
+	
+配置注意事项：
+	port 
+		-- 单主机集群或多主机集群 都必须设置
+	bind 
+		-- 单主机集群可以不设置，但多主机集群必须设置为本机IP
+	daemonize 
+		-- 测试环境和生产环境尽量都设置，不然实验或生产时候非常麻烦
+	pidfile 
+		-- 测试环境和生产环境推荐设置，服务的标识
+	cluster-enabled 
+		-- 开启redis实例的集群模式
+	cluster-config-file 
+		-- 集群配置文件路径，启动时自动创建并更新该文件，推荐使用port标识的集群唯一文件名
+	cluster-node-timeout 
+		-- 集群验证超时时间
+	appendonly 
+		-- 日志配置，每次操作都记录
+	
+集群注意事项：
+	redis集群正常运行至少三个主节点，
+	集群测试实验时候推荐使用至少6个redis实例节点，三主三从，一一对应。
+	集群的redis实例节点，需要专用目录和专用配置文件，配置文件中涉及到的唯一标识用自己的port号码
+	集群redis实例节点启动时候，会自动生成自己的ID,而且这个id是集群生命周期中节点的唯一识别码
+	安装redis时候，生成集群配置命令 redis-trib.rb，复制到系统全局路径目录中
+	cluster-config-file 文件的目录是redis的家目录下
+	
+创建集群命令
+
+	redis-trib.rb create --replicas 1 IP1:PORT1 IP2:PORT2 IP3:PORT3 IP4:PORT4 IP5:PORT5 IP6:PORT6
+	
+	命令格式详解：
+	redis-trib.rb 
+		-- 系统环境变量路径中的集群操作命令
+	create 
+		-- 是创建集群的命令参数
+	--replicas 1 
+		-- 为集群中的每个主节点创建一个从节点，因为我们配置的时候就是三主三从，一一对应
+	IPn:PORTn 
+		-- 需要加入到集群中的各个redis实例
+
+	简单来说，上面命令的意思就是让 redis-trib 程序创建一个包含三个主节点和三个从节点的集群。命令执行成功后，就会打印出一份集群中所有节点信息的配置展示， 如果确定觉得没问题的话，输入 yes， redis-trib 就会将这份配置应用到集群当中.
+
+	redis-trib默认用前3个实例作为Master，后3个作为Slave。因为Redis基于Master-Slave做数据备份，而非像Cassandra或Hazelcast一样不区分结点角色，自动复制并分配Slot的位置到各个结点
+	
+	注意：
+		创建集群的时候，任何节点中都不允许有key
+		新节点中没有任何数据， 因为它没有包含任何哈希桶。
+		尽管新节点没有包含任何哈希桶， 但它仍然是一个主节点，所以在集群需要将某个从节点升级为新的主节点时，这个新节点不会被选中
+	
+主机1[192.168.8.14]操作部分：
+集群单个节点的配置流程
+	1、创建文件目录
+	mkdir redis7001
+	2、配置redis配置文件
+	cat << EOF >> redis7001/redis.conf
+	port 7001
+	bind 192.168.8.14
+	daemonize yes
+	pidfile 7001.pid
+	cluster-enabled yes
+	cluster-config-file 7001_node.conf
+	cluster-node-timeout 15000
+	appendonly yes
+	EOF
+	3、启动redis服务
+	redis-server redis7001/redis.conf
+	
+	
+	批量创建6个redis配置文件并启动服务
+for i in 1 2 3 4 5 6
+do
+	mkdir redis700$i
+	cat << EOF >> redis700$i/redis.conf
+	port 700$i
+	bind 192.168.8.14
+	daemonize yes
+	pidfile 700$i.pid
+	cluster-enabled yes
+	cluster-config-file 700$i-node.conf
+	cluster-node-timeout 15000
+	appendonly yes
+	EOF
+	redis-server redis700$i/redis.conf
+done
+
+
+配置ruby环境
+	apt-get install ruby
+	
+配置集群使用命令
+	查看安装文件的地方
+	admin-a@admina-virtual-machine:~/redis$ sudo find / -name "redis-trib.rb"
+	/usr/share/doc/redis-tools/examples/redis-trib.rb
+	移动到普通用户可执行命令的专用目录
+	sudo cp /usr/share/doc/redis-tools/examples/redis-trib.rb /usr/local/bin/
+
+创建集群
+	redis-trib.rb create --replicas 1 192.168.8.14:7001 192.168.8.14:7002 192.168.8.14:7003 192.168.8.14:7004 192.168.8.14:7005 192.168.8.14:7006 
+	
+检查效果：
+	redis-cli -c -h 192.168.8.14 -p 7001 cluster nodes
+	redis-cli -c -h 192.168.8.14 -p 7001 cluster info
+数据检查：
+	登录7001 建立数据
+	admin-a@admina-virtual-machine:~/redis$ redis-cli -c -h 192.168.8.14 -p 7001
+	192.168.8.14:7001> keys *
+	(empty list or set)
+	192.168.8.14:7001> set name nihao
+	-> Redirected to slot [5798] located at 192.168.8.14:7002		# 提示我们去7002上去找
+	OK
+	192.168.8.14:7002> quit
+	那么我们去7002上找
+	admin-a@admina-virtual-machine:~/redis$ redis-cli -c -h 192.168.8.14 -p 7002
+	192.168.8.14:7002> keys *
+	1) "name"
+	192.168.8.14:7002> get name
+	"nihao"
+	192.168.8.14:7002> 
+	
+常见问题：
+	创建集群报错
+	(py_django) admin-a@admina-virtual-machine:~/redis$ redis-trib.rb create --replicas 1 192.168.8.14:7001 192.168.8.14:7002 192.168.8.14:7003 192.168.8.14:7004 192.168.8.14:7005 192.168.8.14:7006
+	/usr/local/bin/redis-trib.rb:1573: warning: key "threshold" is duplicated and overwritten on line 1573
+	/usr/lib/ruby/2.3.0/rubygems/core_ext/kernel_require.rb:55:in `require': cannot load such file -- redis (LoadError)
+		from /usr/lib/ruby/2.3.0/rubygems/core_ext/kernel_require.rb:55:in `require'
+		from /usr/local/bin/redis-trib.rb:25:in `<main>'
+	解决方案：
+		gem install redis
+	
+	ruby版本问题：
+		默认安装的ruby文件可能不能使用，所以你可以这么来建造一个文件来使用
+	# wget http://download.redis.io/releases/redis-3.2.4.tar.gz
+	# tar xf redis-3.2.4.tar.gz 
+	# cd redis-3.2.4
+	# make && make install
+	# ls src/redis-trib.rb -l
+	-rwxrwxr-x 1 root root 60852 Sep 26  2016 src/redis-trib.rb
