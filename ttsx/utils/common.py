@@ -1,5 +1,6 @@
 import hashlib
 
+
 def passwd_jiami(password):
     sha = hashlib.sha256()
     new_password = 'hellopython' + password

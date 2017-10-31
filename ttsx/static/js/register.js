@@ -8,26 +8,21 @@ $(function(){
 
 
 	$('#user_name').blur(function() {
-
-		// 获得所有的服务器返回的错误信息
 		$('.error_info').hide()
 		check_user_name();
 	});
 
 	$('#pwd').blur(function() {
-		// 获得所有的服务器返回的错误信息
 		$('.error_info').hide()
 		check_pwd();
 	});
 
 	$('#cpwd').blur(function() {
-		// 获得所有的服务器返回的错误信息
 		$('.error_info').hide()
 		check_cpwd();
 	});
 
 	$('#email').blur(function() {
-		// 获得所有的服务器返回的错误信息
 		$('.error_info').hide()
 		check_email();
 	});
@@ -55,24 +50,38 @@ $(function(){
 			$('#user_name').next().show();
 			error_name = true;
 		}
+
+
 		else
 		{
-			$.get('/users/check_username_exist/', {'username': $('#user_name').val()}, function (data) {
+            $.get('/users/check_username_exist/',{'username':$('#user_name').val()},function (data) {
+				if (data.ret != 0){
+					$('#user_name').next().html('用户名已经存在了')
+					$('#user_name').show()
+					error_name = true
+					console.log(username)
+				}
 
-				if (data.ret != 0)
-				{
-					$('#user_name').next().html('用户名已经存在!')
-					$('#user_name').next().show();
-					error_name = true;
-				}
-				else
-				{
-					$('#user_name').next().hide();
-					error_name = false;
-				}
-				
+				else {
+                    $('#user_name').next().hide();
+                    error_name = false;
+                }
             });
-
+				// $.get('/users/check_username_exist/', {'username': $('#user_name').val()}, function (data) {
+            //
+				// if (data.ret != 0)
+				// {
+				// 	$('#user_name').next().html('用户名已经存在!')
+				// 	$('#user_name').next().show();
+				// 	error_name = true;
+				// }
+				// else
+				// {
+				// 	$('#user_name').next().hide();
+				// 	error_name = false;
+				// }
+            //
+            // });
 
 		}
 	}

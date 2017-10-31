@@ -20,7 +20,7 @@ def register(request):
 
 
 def register_handle(request):
-    print('res-->',check_register_params(request))
+    # print('res-->',check_register_params(request))
     if check_register_params(request):
         User.objects.register_userinfo_save(request)
         return redirect(reverse('users:login'))
@@ -28,25 +28,35 @@ def register_handle(request):
         return redirect(reverse('users:register'))
 
 
-# def check_username_exist(request):
-#     #获取用户名,表单里面的name属性username
-#     username = get(request,'username')
-#     print('username is --->',username)
-#     #用户名存在
-#     if User.objects.get_userinfo_byname(username):
-#         return  JsonResponse({'ret':1})
-#     #用户名不存在
-#     else:
-#         return  JsonResponse({'ret':0})
-
-# 检查用户名是否存在
 def check_username_exist(request):
-
-    # 获取用户名
-    username = get(request, 'username')
-
-    # 检查用户名是否存在
-    if User.objects.get_userinfo_by_name(username):
-        return JsonResponse({'ret': 1})
+    #获取用户名,表单里面的name属性username
+    username = get(request,'username')
+    print('username is --->',username)
+    #用户名存在
+    if User.objects.get_userinfo_byname(username):
+        return  JsonResponse({'ret':1})
+    #用户名不存在
     else:
-        return JsonResponse({'ret': 0})
+        return  JsonResponse({'ret':0})
+
+def login_handle(request):
+    #对登陆页面的输入数据进行校验
+    if check_login_params(request):
+        #保持用户登陆状态
+        keep_user_online(request)
+        #保持用户名
+        response = redirect(reverse('users:user_center'))
+        remember_username(request,response)
+        return  response
+    #数据校验不成功重新跳转到登陆页面
+    else:
+        return redirect(reverse('users:login'))
+
+
+def user_center(request):
+    return render(request,'users/user_center_info.html')
+
+
+def logout(request):
+    del_session(request)
+    return redirect(reverse('users:login'))

@@ -40,3 +40,39 @@ def check_register_params(request):
     return  flag
 
 
+def check_login_params(request):
+    #获取登陆表单的用户名和密码
+    user_name = post(request,'user_name')
+    user_pass = post(request,'user_pass')
+    if not (5<= len(user_name)<=20):
+        return False
+    if not(8<=len(user_pass)<=20):
+        return  False
+
+    #数据库查询用户输入的用户名是否有对应的信息
+    user = User.objects.get_userinfo_byname(user_name)
+    if not user:
+        return  False
+    #加密是不可逆的，需要对用户的数据进行加密之后在和数据库的密码进行比较
+    if user.user_pass != passwd_jiami(user_pass):
+        return False
+    return  True
+
+
+#保持用户登陆状态
+def keep_user_online(request):
+    #能执行到这说明用户名是合法的
+    user_name = post(request,'user_name')
+    user = User.objects.get_userinfo_byname(user_name)
+    user_id = user.id
+    set_session(request,'username',user_name)
+    set_session(request,'userid',user_id)
+
+
+def remember_username(request,response):
+    #先去除用户是否点击了记住用户名
+    user_remember = post(request,'user_remember')
+    if not user_remember:
+        return
+    user_name = post(request,'user_name')
+    set_cookie(response,'username',user_name)
