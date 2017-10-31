@@ -78,6 +78,7 @@ def keep_user_online(request):
 def remember_username(request,response):
     #先去除用户是否点击了记住用户名
     user_remember = post(request,'user_remember')
+    print('user_member',user_remember)
     if not user_remember:
         return
     user_name = post(request,'user_name')

@@ -54,8 +54,9 @@ def login_handle(request):
         return redirect(reverse('users:login'))
 
 
+@login_permission
 def user_center(request):
-    return render(request,'users/user_center_info.html')
+    return render(request,'users/user_center_info.html',locals())
 
 
 def logout(request):
