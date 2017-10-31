@@ -41,6 +41,7 @@ def check_username_exist(request):
 
 def login_handle(request):
     #对登陆页面的输入数据进行校验
+    # print('检查登陆参数--->', check_login_params(request))
     if check_login_params(request):
         #保持用户登陆状态
         keep_user_online(request)

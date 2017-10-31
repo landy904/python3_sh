@@ -42,15 +42,21 @@ def check_register_params(request):
 
 def check_login_params(request):
     #获取登陆表单的用户名和密码
+    # user_name = request.POST.get('user_name')
     user_name = post(request,'user_name')
+    # user_pass = request.POST.get('user_pass')
     user_pass = post(request,'user_pass')
-    if not (5<= len(user_name)<=20):
+    print('user_name-----+++++>',user_name)
+    print('user_pass---+++++>',user_pass)
+
+    if not (5 <= len(user_name) <=20):
         return False
-    if not(8<=len(user_pass)<=20):
+    if not(8 <= len(user_pass) <=20):
         return  False
 
     #数据库查询用户输入的用户名是否有对应的信息
     user = User.objects.get_userinfo_byname(user_name)
+    print('user is ---->',user)
     if not user:
         return  False
     #加密是不可逆的，需要对用户的数据进行加密之后在和数据库的密码进行比较
