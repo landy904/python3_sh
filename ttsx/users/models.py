@@ -1,6 +1,6 @@
 from django.db import models
 from db.BaseModel import *
-from utils.getpost import *
+from utils.wrappers import *
 from utils.common import *
 
 # Create your models here.
