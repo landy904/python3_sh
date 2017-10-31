@@ -15,7 +15,8 @@ def login(request):
 
 
 def register(request):
-    return render(request,'users/register.html')
+    message = get_info_messge(request)
+    return render(request,'users/register.html',locals())
 
 
 def register_handle(request):
