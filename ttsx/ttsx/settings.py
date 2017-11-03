@@ -40,12 +40,13 @@ INSTALLED_APPS = (
     'goods',
     'cart',
     'orders',
+    'tinymce',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -67,6 +68,7 @@ DATABASES = {
         'PORT':3306,
         'USER':'root',
         'PASSWORD':'123456',
+        # "init_command":"SET foreign_key_checks = 0;",
     }
 }
 
@@ -108,3 +110,29 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
 	os.path.join(BASE_DIR,'static')
 ]
+
+# 配置上传路径
+MEDIA_ROOT = os.path.join(BASE_DIR,'static/goods')
+
+#富文本编辑器
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'advanced',
+    # 'theme': 'simple',
+    'width': 600,
+    'height': 400,
+    'language': 'zh-CN',
+    'theme_advanced_buttons1': 'bold, italic, underline, strikethrough, justifyleft, justifycenter, justifyright, justifyfull, styleselect, bullist, numlist, outdent, indent, undo,redo, link, unlink, image, cleanup, help, code, table, row_before, row_after, delete_row, separator, rowseparator',
+    'theme_advanced_buttons2': 'col_before, col_after, delete_col, hr, removeformat, sub, sup, formatselect, fontselect, fontsizeselect, forecolor,charmap,visualaid,spacer,cut,copy,paste'
+}
+
+
+# 配置发送邮件
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+# 发送邮件的邮箱
+EMAIL_HOST_USER = 'sh_python03@163.com'
+# 在邮箱中设置的客户端授权密码
+EMAIL_HOST_PASSWORD = 'chr904812'
+# 收件人看到的发件人
+EMAIL_FROM = 'xxl<sh_python03@163.com>'

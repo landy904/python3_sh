@@ -1,0 +1,42 @@
+{# 加载自定义过滤器 #}
+{#{% load user_filters %}#}
+{#<div class="left_menu_con clearfix">#}
+{#    <h3>用户中心</h3>#}
+{#    <ul>#}
+{#        <li><a href="user_center_info.html">· 个人信息</a></li>#}
+{#        <li><a href="user_center_order.html" class="active">· 全部订单</a></li>#}
+{#        <li><a href="user_center_site.html">· 收货地址</a></li>#}
+{#        {% for menu in flag|get_menu_list %}#}
+{#            <li><a href="{{ menu.menu_link }}" class="{{ menu.menu_css }}">·{{ menu.menu_name }}</a></li>#}
+{#        {% endfor %}#}
+{#    </ul>#}
+{#</div>#}
+
+{# 装饰器 方式#}
+
+<div class="left_menu_con clearfix">
+    <h3>用户中心</h3>
+    <ul>
+        {% for menu in request.menus %}
+            {% if menu.menu_flag == flag %}
+                <li><a href="{{ menu.menu_link }}" class="active">· {{ menu.menu_name }}</a></li>
+            {% else %}
+                 <li><a href="{{ menu.menu_link }}" >· {{ menu.menu_name }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+
+{# 从数据库读取数据 #}
+{#<div class="left_menu_con clearfix">#}
+{#    <h3>用户中心</h3>#}
+{#    <ul>#}
+{#        {% for menu in menus %}#}
+{#            {% if menu.menu_flag == flag %}#}
+{#                <li><a href="{{ menu.menu_link }}" class="active"> .{{ menu.menu_name }}</a> </li>#}
+{#            {% else %}#}
+{#                <li><a href="{{ menu.menu_link }}">.{{ menu.menu_name }}</a></li>#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
+{#    </ul>#}
+{#</div>#}

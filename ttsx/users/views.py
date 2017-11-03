@@ -4,6 +4,8 @@ from django.core.urlresolvers import reverse
 from .models import  *
 from utils.wrappers import *
 from django.http import  JsonResponse
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from django.conf import settings
 
 # Create your views here.
 def index(request):
@@ -23,6 +25,8 @@ def register_handle(request):
     # print('res-->',check_register_params(request))
     if check_register_params(request):
         User.objects.register_userinfo_save(request)
+        #调用发送邮件的函数
+        send_active_mail(request)
         return redirect(reverse('users:login'))
     else:
         return redirect(reverse('users:register'))
@@ -55,10 +59,68 @@ def login_handle(request):
 
 
 @login_permission
+@add_menu_info
 def user_center(request):
+    # menus = UserCenterMenu.objects.all()
+    user = User.objects.get_userinfo_byname(get_session(request,'username'))
     return render(request,'users/user_center_info.html',locals())
+
+
+@login_permission
+@add_menu_info
+def user_order(request):
+    # menus = UserCenterMenu.objects.all()
+    return render(request,'users/user_center_order.html',locals())
+
+
+@login_permission
+@add_menu_info
+def user_site(request):
+    # menus = UserCenterMenu.objects.all()
+    user = User.objects.get_userinfo_byname(get_session(request, 'username'))
+    return render(request,'users/user_center_site.html',locals())
 
 
 def logout(request):
     del_session(request)
     return redirect(reverse('users:login'))
+
+
+def update_address(request):
+    #校验参数
+    print('check user address params',check_user_address_params(request))
+    if check_user_address_params(request):
+
+        #如果通过，就更新入库
+        # print('入库之前')
+        User.objects.update_user_address(request)
+        # print('入库之后')
+
+    return redirect(reverse('users:user_site'))
+
+
+def active_handle(request,token):
+    # print('test bug test bug ')
+    serializer = Serializer(settings.SECRET_KEY,3600)
+    try:
+        # print('1111111111111111111111111111111111111111111111111')
+        user_id = serializer.loads(token).get("id")
+        # 获得激活链接中的用户ID
+        print('user_id is',user_id)
+        user = User.objects.get(id = user_id)
+        # print('user id and user',user_id,user)
+        user.user_active = True
+        # print('user active is ',user.user_active)
+        user.save()
+        # print('激活成功')
+        # return HttpResponse('用户激活成功')
+        # if user.user_active  == True:
+        #成功激活跳转到登陆页面
+        return redirect(reverse('users:login'))
+    except:
+        return HttpResponse('激活链接已经过期')
+
+
+def  my_send_mail(request):
+
+    return HttpResponse('发送邮件成功')

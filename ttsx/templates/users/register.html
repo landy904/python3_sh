@@ -22,7 +22,7 @@ i
 			</div>
 			<div class="reg_form clearfix">
 				<form method="post"  action="{% url 'users:register_handle' %}">
-					<!--{% csrf_token %}-->
+					{% csrf_token %}
 				<ul>
 					<li>
 						<label>用户名:</label>

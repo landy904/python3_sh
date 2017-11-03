@@ -23,6 +23,17 @@ class UserManager(models.Manager):
         user.save()
 
 
+    def update_user_address(self,request):
+        user = User.objects.get_userinfo_byname(get_session(request,'username'))
+        if not user:
+            return
+        user.user_recv = post(request,'user_recv')
+        user.user_address = post(request,'user_address')
+        user.user_code = post(request,'user_code')
+        user.user_tele = post(request,'user_tele')
+        user.save()
+
+
 class User(BaseModel):
     user_name = models.CharField(max_length=20,verbose_name='用户名')
     user_pass = models.CharField(max_length=64,verbose_name='密码')
@@ -34,3 +45,9 @@ class User(BaseModel):
     user_tele = models.CharField(max_length=11,verbose_name='手机')
 
     objects = UserManager()
+
+
+class UserCenterMenu(BaseModel):
+    menu_name = models.CharField(max_length=30)
+    menu_link = models.CharField(max_length=100)
+    menu_flag = models.CharField(max_length=10)
